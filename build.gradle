@@ -28,14 +28,22 @@ dependencies {
 	compile group: 'org.jsoup', name: 'jsoup', version: '1.8.1'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	compile "org.codehaus.groovy:groovy:2.5.13"
 
+	testCompile 'org.codehaus.groovy:groovy-all:2.4.11'
+	testCompile'org.spockframework:spock-core:1.1-groovy-2.4'
+//
+//	testCompile "org.codehaus.groovy:groovy:2.5.13"
+//	testCompile platform("org.spockframework:spock-bom:2.0-M3-groovy-2.5")
+//	testCompile "org.spockframework:spock-core"
 	testCompile("org.springframework.boot:spring-boot-starter-test")
-	testCompile platform("org.spockframework:spock-bom:2.0-M3-groovy-2.5")
-	testCompile "org.spockframework:spock-core"
+
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
 	testImplementation 'io.projectreactor:reactor-test'
 }
 

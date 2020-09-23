@@ -47,12 +47,12 @@ public class UpflixService {
                     return savedUpflix;
                 });
 
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(objectFlux, Movie.class);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(objectFlux, Upflix.class);
     }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         Flux<Upflix> upflixFlux = getAll();
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(upflixFlux, Movie.class);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(upflixFlux, Upflix.class);
     }
 
     public Flux<Upflix> getAll() {
