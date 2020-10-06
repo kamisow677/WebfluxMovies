@@ -8,6 +8,7 @@ class UpflixTestBilder {
     {
         return Upflix
                 .builder()
+                .id("1")
                 .link("Link")
                 .distributionChoice("Abonament")
                 .siteName("site")
@@ -18,5 +19,11 @@ class UpflixTestBilder {
         return baseUpflix()
                 .distributionChoice(distrChoice)
 
+    }
+
+    static Upflix.UpflixBuilder createUpflix(String distrChoice, String id) {
+        return baseUpflix()
+                .distributionChoice(distrChoice)
+                .id(id)
     }
 }

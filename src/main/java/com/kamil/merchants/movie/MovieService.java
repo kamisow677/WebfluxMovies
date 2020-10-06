@@ -51,11 +51,9 @@ public class MovieService {
     }
 
     public Mono<ServerResponse> getAllMoviesFromUpflixSite(ServerRequest request) {
-        String movieId = request.pathVariable("siteName");
-        Flux<Upflix> upflixFlux = upflixService.findBySiteName("vod-cdapremiu");
-        Flux<Movie> objectFlux = upflixFlux.flatMap(upflix -> {
-            return movieRepository.findById(upflix.getMovie_id());
-        });
+        String siteName = request.pathVariable("siteName");
+        Flux<Upflix> upflixesBySiteName = upflixService.findBySiteName(siteName);
+        Flux<Movie> objectFlux = upflixesBySiteName.flatMap(upflix -> movieRepository.findById(upflix.getMovie_id()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(objectFlux, Movie.class);
     }
 

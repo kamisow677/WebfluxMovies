@@ -1,8 +1,8 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.3.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
-	id 'groovy'
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'groovy'
 }
 
 group = 'com.kamil'
@@ -10,43 +10,42 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    // Spock releases are available from Maven Central
+    mavenCentral()
+    // Spock snapshots are available from the Sonatype OSS snapshot repository
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '3.0.3.RELEASE'
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-	compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.8.RELEASE'
-	compile group: 'org.jsoup', name: 'jsoup', version: '1.8.1'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '3.0.3.RELEASE'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.8.RELEASE'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.8.1'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	compile "org.codehaus.groovy:groovy:2.5.13"
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.11'
 
-	testCompile 'org.codehaus.groovy:groovy-all:2.4.11'
-	testCompile'org.spockframework:spock-core:1.1-groovy-2.4'
-//
-//	testCompile "org.codehaus.groovy:groovy:2.5.13"
-//	testCompile platform("org.spockframework:spock-bom:2.0-M3-groovy-2.5")
-//	testCompile "org.spockframework:spock-core"
-	testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile "org.codehaus.groovy:groovy:2.5.13"
+    testCompile "org.spockframework:spock-core"
+    testCompile group: 'org.spockframework', name: 'spock-spring', version: '2.0-M3-groovy-2.5'
 
-
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
-	testImplementation 'io.projectreactor:reactor-test'
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+    testImplementation 'io.projectreactor:reactor-test'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

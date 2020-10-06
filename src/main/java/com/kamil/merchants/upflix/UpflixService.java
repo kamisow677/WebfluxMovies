@@ -35,10 +35,9 @@ public class UpflixService {
 
         Mono<Movie> movieMono = movieService.save(filmName.get(), filmYear.get());
 
+        List<Upflix> upflixes = upflixParser.getAllUpflixesFromWeb(filmName.get(), filmYear.get());
 
-        List<Upflix> allUpflixesFromWeb = upflixParser.getAllUpflixesFromWeb(filmName.get(), filmYear.get());
-
-        Flux<Upflix> objectFlux = Flux.fromIterable(allUpflixesFromWeb)
+        Flux<Upflix> objectFlux = Flux.fromIterable(upflixes)
                 .flatMap(upflix -> {
                     Mono<Upflix> savedUpflix = movieMono.flatMap(movie -> {
                         upflix.setMovie_id(movie.getId());
@@ -70,8 +69,7 @@ public class UpflixService {
         return ServerResponse.ok().build(voidMono);
     }
 
-
-    private Mono<Upflix> save(Upflix upflix) {
+    public Mono<Upflix> save(Upflix upflix) {
         Mono<Upflix> upflixMono = upflixRepository.findBySiteNameAndDistributionChoice(upflix.getSiteName(), upflix.getDistributionChoice())
                 .switchIfEmpty(upflixRepository.save(upflix));
         return upflixMono;
@@ -79,9 +77,9 @@ public class UpflixService {
 
     public Mono<ServerResponse> getById(ServerRequest request) {
         String upflixId = request.pathVariable("id");
-        Mono<Upflix> islandMono = getById(upflixId)
+        Mono<Upflix> upflixMono = getById(upflixId)
                 .switchIfEmpty(Mono.error(new Exception("No Upflix  was found with id:  " + upflixId)));
-        return islandMono.flatMap(data -> ServerResponse.ok().bodyValue(data))
+        return upflixMono.flatMap(data -> ServerResponse.ok().bodyValue(data))
                 .onErrorResume(error -> ServerResponse.badRequest().bodyValue(error.getMessage()));
     }
 
