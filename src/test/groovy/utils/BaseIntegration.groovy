@@ -1,6 +1,7 @@
-package merchants
+package utils
 
 import com.kamil.merchants.movie.MovieRepository
+import com.kamil.merchants.movie.MovieService
 import com.kamil.merchants.upflix.UpflixParser
 import com.kamil.merchants.upflix.UpflixRepository
 import com.kamil.merchants.upflix.UpflixRouter
@@ -8,13 +9,10 @@ import com.kamil.merchants.upflix.UpflixService
 import groovy.json.JsonSlurper
 import javafx.util.Pair
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.server.RouterFunction
 import spock.lang.Specification
 
-@SpringBootTest
 class BaseIntegration extends Specification {
 
     @Autowired
@@ -26,8 +24,8 @@ class BaseIntegration extends Specification {
     @Autowired
     MovieRepository movieRepository
 
-    @MockBean
-    UpflixParser upflixParser
+    @Autowired
+    MovieService movieService
 
     WebTestClient clientUpflixes
     WebTestClient clientUpflix
@@ -46,7 +44,7 @@ class BaseIntegration extends Specification {
     }
 
     WebTestClient.BodyContentSpec createGetAllRequest(String url) {
-        return createbaseRequest(url, clientUpflixes.get())
+        return createbaseRequest(url, clientUpflixes.get(), new ArrayList<String>())
     }
 
     WebTestClient.BodyContentSpec createGetRequest(String url, List<String> params = new ArrayList()) {
@@ -54,11 +52,11 @@ class BaseIntegration extends Specification {
     }
 
     WebTestClient.BodyContentSpec createDaleteRequest(String url) {
-        return createbaseRequest(url, clientUpflix.delete())
+        return createbaseRequest(url, clientUpflix.delete(), new ArrayList<String>())
     }
 
     WebTestClient.BodyContentSpec createSaveRequest(String url) {
-        return createbaseRequest(url, clientUpflix.post())
+        return createbaseRequest(url, clientUpflix.post(), new ArrayList<String>())
     }
 
     private createbaseRequest(String url, WebTestClient.RequestHeadersUriSpec<?> st , List<Pair<String,String>> params) {

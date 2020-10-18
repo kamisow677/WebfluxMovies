@@ -2,6 +2,7 @@ package com.kamil.merchants.upflix;
 
 import com.kamil.merchants.movie.Movie;
 import com.kamil.merchants.movie.MovieService;
+import com.kamil.merchants.request.RequestSender;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -28,19 +30,21 @@ public class UpflixService {
     @Autowired
     MovieService movieService;
 
+    @Autowired
+    RequestSender requestSender;
+
     public Mono<ServerResponse> getUpflixMovieData(ServerRequest request) {
 
         Optional<String> filmName = request.queryParam("filmName");
         Optional<String> filmYear = request.queryParam("filmYear");
 
-        Mono<Movie> movieMono = movieService.save(filmName.get(), filmYear.get());
+        Mono<Movie> movieMono = movieService.save(UUID.randomUUID(), filmName.get(), filmYear.get());
 
         List<Upflix> upflixes = upflixParser.getAllUpflixesFromWeb(filmName.get(), filmYear.get());
-
         Flux<Upflix> objectFlux = Flux.fromIterable(upflixes)
                 .flatMap(upflix -> {
                     Mono<Upflix> savedUpflix = movieMono.flatMap(movie -> {
-                        upflix.setMovie_id(movie.getId());
+                        upflix.setMovieId(movie.getId());
                         return save(upflix);
                     });
                     return savedUpflix;
@@ -70,9 +74,8 @@ public class UpflixService {
     }
 
     public Mono<Upflix> save(Upflix upflix) {
-        Mono<Upflix> upflixMono = upflixRepository.findBySiteNameAndDistributionChoice(upflix.getSiteName(), upflix.getDistributionChoice())
+        return upflixRepository.findBySiteNameAndDistributionChoiceAndMovieId(upflix.getSiteName(), upflix.getDistributionChoice(), upflix.getMovieId())
                 .switchIfEmpty(upflixRepository.save(upflix));
-        return upflixMono;
     }
 
     public Mono<ServerResponse> getById(ServerRequest request) {

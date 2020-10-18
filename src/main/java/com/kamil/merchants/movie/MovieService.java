@@ -1,23 +1,26 @@
 package com.kamil.merchants.movie;
 
-import com.kamil.merchants.islands.Island;
-import com.kamil.merchants.islands.IslandRepository;
 import com.kamil.merchants.upflix.Upflix;
 import com.kamil.merchants.upflix.UpflixService;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 @Service
-@Log4j2
+@Slf4j
 public class MovieService {
 
     @Autowired
@@ -53,22 +56,26 @@ public class MovieService {
     public Mono<ServerResponse> getAllMoviesFromUpflixSite(ServerRequest request) {
         String siteName = request.pathVariable("siteName");
         Flux<Upflix> upflixesBySiteName = upflixService.findBySiteName(siteName);
-        Flux<Movie> objectFlux = upflixesBySiteName.flatMap(upflix -> movieRepository.findById(upflix.getMovie_id()));
+        Flux<Movie> objectFlux = upflixesBySiteName.flatMap(upflix -> movieRepository.findById(upflix.getMovieId()));
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(objectFlux, Movie.class);
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
+        log.info("WSZEDLEM");
         Mono<Movie> movieMono = request.bodyToMono(Movie.class)
-                .flatMap(movie -> save(movie.getTitle(), movie.getYear()));
+                .flatMap(movie -> {
+                    return save(UUID.randomUUID(), movie.getTitle(), movie.getYear());
+                });
 
         return movieMono.flatMap(data -> ServerResponse.ok().bodyValue(data))
                 .onErrorResume(error -> ServerResponse.badRequest().bodyValue(error.getMessage()));
     }
 
-    public Mono<Movie> save(String title, String year) {
+    public Mono<Movie> save(UUID id, String title, String year) {
         return movieRepository.findByTitle(title)
                 .switchIfEmpty(movieRepository.save(
                         Movie.builder()
+                                .id(id.toString())
                                 .title(title)
                                 .year(year)
                                 .build()

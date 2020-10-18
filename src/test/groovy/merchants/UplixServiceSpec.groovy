@@ -1,21 +1,33 @@
 package com.kamil.merchants
 
+
 import com.kamil.merchants.upflix.Upflix
+import com.kamil.merchants.upflix.UpflixParser
 import javafx.util.Pair
-import merchants.BaseIntegration
-import org.mockito.Mockito
+import utils.BaseIntegration
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import reactor.test.StepVerifier
 import spock.lang.Shared
 import spock.lang.Unroll
 
-import static merchants.UpflixTestBilder.createUpflixDistrChoice
-import static merchants.UpflixTestBilder.createUpflix
+import static utils.UpflixTestBilder.createUpflixDistrChoice
+import static utils.UpflixTestBilder.createUpflix
 import static org.mockito.ArgumentMatchers.anyString
 import static org.mockito.Mockito.when
 
 @SpringBootTest
 class UplixServiceSpec extends BaseIntegration {
+
+    @MockBean
+    UpflixParser upflixParser
+
+    public static final String FILMNAME_KEY = "filmName"
+    public static final String FILMNAME_VALUE = "filmName_value"
+    public static final String FILMYEAR_KEY = "filmYear"
+    public static final String FILMYEAR_VALUE = "filmYear_value"
+    public static final String DIST_CHOICE = "distChoice"
+    public static final String ID = "1"
 
     @Shared
     Upflix dummy = createUpflixDistrChoice("nament").build()
@@ -27,6 +39,7 @@ class UplixServiceSpec extends BaseIntegration {
 
     def cleanupper() {
         upflixRepository.deleteAll().block()
+        movieRepository.deleteAll().block()
     }
 
     def "get all upflixes"() {
@@ -96,22 +109,24 @@ class UplixServiceSpec extends BaseIntegration {
     def "getUpflixMovieData"() {
         given:
             cleanupper()
-            def dum = createUpflix("TestowyChoice", "4")
-            def dum2 = createUpflix("TestowyChoice", "5")
-            upflixRepository.save(dum.build()).block()
-            upflixRepository.save(dum2.build()).block()
             ArrayList arrayList = new ArrayList()
-            arrayList.add(new Pair("filmName", "filmName"))
-            arrayList.add(new Pair("filmYear", "filmYear"))
-        when(upflixParser.getAllUpflixesFromWeb(anyString(), anyString()))
-                .thenReturn(Arrays.asList(createUpflix("distChoice", "6").build()))
+            arrayList.add(new Pair(FILMNAME_KEY, FILMNAME_VALUE))
+            arrayList.add(new Pair(FILMYEAR_KEY, FILMYEAR_VALUE))
+            when(upflixParser.getAllUpflixesFromWeb(anyString(), anyString()))
+                    .thenReturn(Arrays.asList(createUpflix(DIST_CHOICE, ID).build(),createUpflix(DIST_CHOICE, ID).build()))
         when:
             def eventFlux = createGetRequest("/upflix", arrayList)
         then:
             def parse = jsonslurpe.parse(eventFlux.returnResult().responseBody)
-            assert parse.link == dum.link
-            assert parse.distributionChoice == dum.distributionChoice
 
+            assert parse.get(0).id == ID
+            assert parse.get(0).distributionChoice == DIST_CHOICE
+            assert parse.size() == 2
+            def first = movieRepository.findAll().blockFirst()
+            assert first.title == FILMNAME_VALUE
+            assert first.year == FILMYEAR_VALUE
+//            1 * movieService.save(_)
+//            1 * upflixParser.getAllUpflixesFromWeb(*_)
     }
 
 }

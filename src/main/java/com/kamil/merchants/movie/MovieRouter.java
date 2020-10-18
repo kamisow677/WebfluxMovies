@@ -21,15 +21,13 @@ public class MovieRouter {
                 .andRoute(RequestPredicates.GET("/movie/{id}")
                         .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), movieService::getById)
                 .andRoute(RequestPredicates.POST("/movie")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), movieService::save)
-                .andRoute(RequestPredicates.GET("/moviex/{siteName}")
-                    .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), movieService::getAllMoviesFromUpflixSite);
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), movieService::save);
     }
 
     @Bean
     public RouterFunction<ServerResponse> asd(MovieService movieService) {
         return RouterFunctions
-                .route(RequestPredicates.GET("/aa/{siteName}")
+                .route(RequestPredicates.GET("/movie/sitename/{siteName}")
                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), movieService::getAllMoviesFromUpflixSite);
     }
 

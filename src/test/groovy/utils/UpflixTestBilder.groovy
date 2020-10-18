@@ -1,4 +1,4 @@
-package merchants
+package utils
 
 import com.kamil.merchants.upflix.Upflix
 

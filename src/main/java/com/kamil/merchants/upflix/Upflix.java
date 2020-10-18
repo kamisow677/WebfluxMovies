@@ -18,7 +18,7 @@ public class Upflix {
     @Id
     private String id;
 
-    private String movie_id;
+    private String movieId;
 
     private String siteName;
 
