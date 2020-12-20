@@ -1,6 +1,6 @@
-package com.kamil.merchants.upflix;
+package com.kamil.merchants.infrastructure.parser;
 
-import org.jsoup.Jsoup;
+import com.kamil.merchants.infrastructure.repository.Upflix;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,19 +12,35 @@ import java.util.Iterator;
 import java.util.List;
 
 @Component
-public class UpflixParser {
+public class UpflixParserImpl implements UpflixParser {
 
     @Autowired
     DocumentDownloader documentDownloader;
 
-    public List<Upflix> getAllUpflixesFromWeb(String filmName, String year){
-        Document doc = documentDownloader.getAllUpflixesFromWeb(filmName, year);
-        String cssQuery = ".nav.nav-tabs.sources";
+    public double getExtendedDataMovie(String filmName, String year){
+        Document doc = documentDownloader.getUpflixDocument(filmName, year);
+        String cssQuery = ".score";
         Elements select = doc.select(cssQuery);
-        return parseHtml(select);
+        return parseHtmlExtendedMovie(select);
     }
 
-    private List<Upflix> parseHtml(Elements elements) {
+    private double parseHtmlExtendedMovie(Elements select) {
+        return 7.6;
+    }
+
+    @Override
+    public List<Upflix> getDataForExtendedMovie(String filmName, String year) {
+        return null;
+    }
+
+    public List<Upflix> getAllUpflixesFromWeb(String filmName, String year){
+        Document doc = documentDownloader.getUpflixDocument(filmName, year);
+        String cssQuery = ".nav.nav-tabs.sources";
+        Elements select = doc.select(cssQuery);
+        return parseHtmlUpflix(select);
+    }
+
+    private List<Upflix> parseHtmlUpflix(Elements elements) {
         List<Upflix> upflixes = new ArrayList<>();
         Elements children = elements.get(0).children();
         for (Element el: children) {

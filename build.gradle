@@ -16,19 +16,23 @@ configurations {
 }
 
 repositories {
-    // Spock releases are available from Maven Central
     mavenCentral()
-    // Spock snapshots are available from the Sonatype OSS snapshot repository
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.kafka:spring-kafka'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-stream-binder-kafka', version: '3.0.8.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-stream', version: '3.0.8.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '3.0.3.RELEASE'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.8.RELEASE'
     compile group: 'org.jsoup', name: 'jsoup', version: '1.8.1'
+//    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.2.0.RELEASE'
+    runtime group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Finchley.SR4', ext: 'pom'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
@@ -43,6 +47,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'io.projectreactor:reactor-test'
 }
 

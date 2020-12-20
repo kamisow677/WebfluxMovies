@@ -1,70 +1,64 @@
 package utils
 
-import com.kamil.merchants.movie.MovieRepository
-import com.kamil.merchants.movie.MovieService
-import com.kamil.merchants.upflix.UpflixParser
-import com.kamil.merchants.upflix.UpflixRepository
-import com.kamil.merchants.upflix.UpflixRouter
-import com.kamil.merchants.upflix.UpflixService
+import com.kamil.merchants.infrastructure.ServiceResponseHandler
 import groovy.json.JsonSlurper
-import javafx.util.Pair
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.server.RouterFunction
 import spock.lang.Specification
 
+@ActiveProfiles("test")
 class BaseIntegration extends Specification {
 
     @Autowired
-    UpflixService upflixService
+    ServiceResponseHandler upflixServiceResponseHandler
 
     @Autowired
-    UpflixRepository upflixRepository
+    com.kamil.merchants.infrastructure.repository.MovieRepository movieRepository
 
-    @Autowired
-    MovieRepository movieRepository
-
-    @Autowired
-    MovieService movieService
-
-    WebTestClient clientUpflixes
     WebTestClient clientUpflix
-    JsonSlurper jsonslurpe = new JsonSlurper()
+    WebTestClient clientUpflixes
+    WebTestClient clientMovie
+    JsonSlurper jsonslurper = new JsonSlurper()
 
     def setup() {
-        RouterFunction<?> routeFlux = (new UpflixRouter()).routeUpflixAll(upflixService)
+        RouterFunction<?> routeFlux = (new com.kamil.merchants.infrastructure.api.UpflixRouter()).routeUpflix(upflixServiceResponseHandler)
+        clientUpflix = WebTestClient.bindToRouterFunction(routeFlux).build()
+
+        routeFlux = (new com.kamil.merchants.infrastructure.api.UpflixRouter()).routeUpflixes(upflixServiceResponseHandler)
         clientUpflixes = WebTestClient.bindToRouterFunction(routeFlux).build()
 
-        RouterFunction<?> routeMono = (new UpflixRouter()).routeUpflix(upflixService)
-        clientUpflix = WebTestClient.bindToRouterFunction(routeMono).build()
+        RouterFunction<?> routeMono = (new com.kamil.merchants.infrastructure.api.MovieRouter()).routeMovie(upflixServiceResponseHandler)
+        clientMovie = WebTestClient.bindToRouterFunction(routeMono).build()
     }
 
     def cleanup() {
-        upflixRepository.deleteAll().block()
+        movieRepository.deleteAll().block()
     }
 
     WebTestClient.BodyContentSpec createGetAllRequest(String url) {
         return createbaseRequest(url, clientUpflixes.get(), new ArrayList<String>())
     }
 
-    WebTestClient.BodyContentSpec createGetRequest(String url, List<String> params = new ArrayList()) {
+    WebTestClient.BodyContentSpec createMovieGetRequest(String url, List<String> params = new ArrayList()) {
+        return createbaseRequest(url, clientMovie.get(), params)
+    }
+
+    WebTestClient.BodyContentSpec createGetUpflixRequest(String url, List<String> params = new ArrayList()) {
         return createbaseRequest(url, clientUpflix.get(), params)
     }
 
-    WebTestClient.BodyContentSpec createDaleteRequest(String url) {
-        return createbaseRequest(url, clientUpflix.delete(), new ArrayList<String>())
+    WebTestClient.BodyContentSpec createDeleteRequest(String url) {
+        return createbaseRequest(url, clientMovie.delete(), new ArrayList<String>())
     }
 
-    WebTestClient.BodyContentSpec createSaveRequest(String url) {
-        return createbaseRequest(url, clientUpflix.post(), new ArrayList<String>())
-    }
-
-    private createbaseRequest(String url, WebTestClient.RequestHeadersUriSpec<?> st , List<Pair<String,String>> params) {
+    private createbaseRequest(String url, WebTestClient.RequestHeadersUriSpec<?> st , List<Tuple> params) {
         if (params.size() != 0) {
             def u = { uriBuilder -> uriBuilder
                         .path(url)
-                        .queryParam(params.get(0).getKey(), params.get(0).getValue())
-                        .queryParam(params.get(1).getKey(), params.get(1).getValue())
+                        .queryParam(params.get(0)[0], params.get(0)[1])
+                        .queryParam(params.get(1)[0], params.get(1)[1])
                         .build()
             }
             return st.uri(u)

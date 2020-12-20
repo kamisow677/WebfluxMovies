@@ -1,16 +1,15 @@
-package com.kamil.merchants.movie;
+package com.kamil.merchants.infrastructure.repository;
 
-import com.kamil.merchants.upflix.Upflix;
 import lombok.Builder;
-import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Document
 @Builder
+@ToString
 public class Movie {
 
     @Id
@@ -62,5 +61,16 @@ public class Movie {
     }
 
     public Movie() {
+    }
+
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", year='" + year + '\'' +
+                ", upflixes=" + upflixes +
+                '}';
     }
 }

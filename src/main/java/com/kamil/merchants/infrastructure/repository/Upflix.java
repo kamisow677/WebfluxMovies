@@ -1,4 +1,4 @@
-package com.kamil.merchants.upflix;
+package com.kamil.merchants.infrastructure.repository;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 
 @Data
 @Document
@@ -17,8 +16,6 @@ public class Upflix {
 
     @Id
     private String id;
-
-    private String movieId;
 
     private String siteName;
 

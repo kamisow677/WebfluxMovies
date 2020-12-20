@@ -1,7 +1,6 @@
 package com.kamil.merchants
 
-import com.kamil.merchants.upflix.DocumentDownloader
-import com.kamil.merchants.upflix.UpflixParser
+
 import utils.BaseIntegration
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,12 +26,11 @@ class UplixParserSpec extends BaseIntegration {
     public static final String SITENAME_CDA = "vod-cdapremium"
     public static final String DISTCHOICE_ABONAMENT = "ABONAMENT"
 
-
     @Autowired
-    UpflixParser upflixParser
+    com.kamil.merchants.infrastructure.parser.UpflixParserImpl upflixParser
 
     @MockBean
-    DocumentDownloader documentDownloader
+    com.kamil.merchants.infrastructure.parser.DocumentDownloader documentDownloader
 
     def "when context is loaded then all expected beans are created"() {
         expect: "the context is created"
@@ -40,7 +38,6 @@ class UplixParserSpec extends BaseIntegration {
     }
 
     def cleanupper() {
-        upflixRepository.deleteAll().block()
         movieRepository.deleteAll().block()
     }
 
@@ -50,7 +47,7 @@ class UplixParserSpec extends BaseIntegration {
             Path path = Paths.get(DOCUMENT_RESOURCE_PATH)
             String html = Files.readString(path)
             Document doc = Jsoup.parse(html)
-            when(documentDownloader.getAllUpflixesFromWeb(anyString(), anyString())).thenReturn(doc)
+            when(documentDownloader.getUpflixDocument(anyString(), anyString())).thenReturn(doc)
         when:
             def parsedUpflixes = upflixParser.getAllUpflixesFromWeb(FILMNAME_VALUE, FILMYEAR_VALUE)
         then:

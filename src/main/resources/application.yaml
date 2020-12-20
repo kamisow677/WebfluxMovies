@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  cloud:
+    stream:
+      bindings:
+        movies-in:
+          destination: movies
+        movies-out:
+          destination: movies
+      kafka:
+        binder:
+          brokers: localhost:9092
+  data:
+    mongodb:
+      uri: mongodb://localhost:27019/local

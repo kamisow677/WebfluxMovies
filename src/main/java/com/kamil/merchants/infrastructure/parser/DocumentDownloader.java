@@ -1,4 +1,4 @@
-package com.kamil.merchants.upflix;
+package com.kamil.merchants.infrastructure.parser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,7 +9,7 @@ import java.io.IOException;
 @Component
 public class DocumentDownloader {
 
-    public Document getAllUpflixesFromWeb(String filmName, String year){
+    public Document getUpflixDocument(String filmName, String year){
         String url = constructUpflixUrl(filmName, year);
         return connectToUrl(url);
     }
