@@ -1,11 +1,9 @@
 package com.kamil.merchants.infrastructure;
 
 import com.kamil.merchants.Generator;
-import com.kamil.merchants.infrastructure.repository.MovieRepository;
+import com.kamil.merchants.infrastructure.repository.*;
 import com.kamil.merchants.kafka.KafkaService;
-import com.kamil.merchants.infrastructure.repository.Movie;
 import com.kamil.merchants.infrastructure.parser.UpflixParser;
-import com.kamil.merchants.infrastructure.repository.Upflix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -55,7 +54,7 @@ public class ServiceResponseHandler {
     }
 
     public Mono<ServerResponse> getAllUpflixes(ServerRequest request) {
-        Flux<Object> upflixFlux = movieRepository.getAllDistinctUpflixes();
+        Flux<Upflix> upflixFlux = movieRepository.getAllDistinctUpflixes();
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(upflixFlux, Upflix.class);
     }
 
@@ -65,6 +64,22 @@ public class ServiceResponseHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(upflixFlux, Upflix.class);
     }
 
+    public Mono<ServerResponse> getBest(ServerRequest request) {
+        Flux<UpflixCount> upflixFlux = movieRepository.getBestUpflixCount().sort(Comparator.comparing(UpflixCount::getId));
+        Flux<Upflix> allDistinctUpflixes = movieRepository.getAllDistinctUpflixes().sort(Comparator.comparing(Upflix::getSiteName));
+
+        Flux<UpflixWithCount> zip = Flux.zip(
+                upflixFlux,
+                allDistinctUpflixes,
+                (upflixCount, upflix) -> {
+                    UpflixWithCount upflixWithCount = new UpflixWithCount(upflix);
+                    upflixWithCount.setCount(upflixCount.getCount());
+                    return upflixWithCount;
+                }
+        ).sort((obj1, obj2) -> (obj1.getCount() > obj2.getCount()) ? -1 : 1);
+
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(zip, Upflix.class);
+    }
 
     public Mono<ServerResponse> deleteMovieById(ServerRequest request) {
         String movieId = request.pathVariable("id");
@@ -76,7 +91,6 @@ public class ServiceResponseHandler {
         Mono<Void> voidMono = movieRepository.deleteAll();
         return ServerResponse.ok().build(voidMono);
     }
-
 
     public Mono<ServerResponse> getMovieById(ServerRequest request) {
         String movieId = request.pathVariable("id");

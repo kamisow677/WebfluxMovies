@@ -2,51 +2,57 @@ package utils
 
 import com.kamil.merchants.infrastructure.repository.Movie
 import com.kamil.merchants.infrastructure.repository.Upflix
+import groovy.transform.builder.Builder
 
+@Builder(prefix = "with")
 class MovieTestBilder {
 
-    private static Movie.MovieBuilder baseMovie()
+     String id
+     String title
+     String year
+     List<Upflix> upflixes
+
+    MovieTestBilder() {
+        this.id = "id"
+        this.title = "title"
+        this.year = "year"
+        this.upflixes = new ArrayList<>()
+    }
+
+     Movie toMovie()
     {
         return Movie
                 .builder()
-                .id("1")
-                .title("title")
-                .year("year")
-    }
-
-    static Movie.MovieBuilder createMovie() {
-        return baseMovie()
-    }
-
-    static Movie.MovieBuilder createMovie(String id) {
-        return baseMovie().id(id)
+                .id(this.id)
+                .title(this.title)
+                .year(this.year)
+                .upflixes(this.upflixes)
+                .build()
     }
 
 }
 
+@Builder(prefix = "with")
 class UpflixTestBilder {
 
-    static Upflix.UpflixBuilder baseUpflix()
+     String siteName = "site"
+     String link = "Link"
+     String distributionChoice = "Abonament"
+
+    UpflixTestBilder() {
+        this.siteName = "siteName"
+        this.link = "link"
+        this.distributionChoice = "distributionChoice"
+    }
+
+    Upflix toUpflix()
     {
         return Upflix
                 .builder()
-                .id("1")
-                .link("Link")
-                .distributionChoice("Abonament")
-                .siteName("site")
-
-    }
-
-    static Upflix.UpflixBuilder createUpflixDistrChoice(String distrChoice) {
-        return baseUpflix()
-                .distributionChoice(distrChoice)
-
-    }
-
-    static Upflix.UpflixBuilder createUpflixDistrChoice(String distrChoice, String id) {
-        return baseUpflix()
-                .distributionChoice(distrChoice)
-                .id(id)
+                .link(this.link)
+                .distributionChoice(this.distributionChoice)
+                .siteName(this.siteName)
+                .build()
 
     }
 

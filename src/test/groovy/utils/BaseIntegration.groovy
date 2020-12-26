@@ -20,6 +20,7 @@ class BaseIntegration extends Specification {
     WebTestClient clientUpflix
     WebTestClient clientUpflixes
     WebTestClient clientMovie
+    WebTestClient clientMovieExtra
     JsonSlurper jsonslurper = new JsonSlurper()
 
     def setup() {
@@ -31,6 +32,9 @@ class BaseIntegration extends Specification {
 
         RouterFunction<?> routeMono = (new com.kamil.merchants.infrastructure.api.MovieRouter()).routeMovie(upflixServiceResponseHandler)
         clientMovie = WebTestClient.bindToRouterFunction(routeMono).build()
+
+        routeMono = (new com.kamil.merchants.infrastructure.api.MovieRouter()).routeMovieExtra(upflixServiceResponseHandler)
+        clientMovieExtra = WebTestClient.bindToRouterFunction(routeMono).build()
     }
 
     def cleanup() {
@@ -47,6 +51,10 @@ class BaseIntegration extends Specification {
 
     WebTestClient.BodyContentSpec createGetUpflixRequest(String url, List<String> params = new ArrayList()) {
         return createbaseRequest(url, clientUpflix.get(), params)
+    }
+
+    WebTestClient.BodyContentSpec createGetMovieExtraRequest(String url, List<String> params = new ArrayList()) {
+        return createbaseRequest(url, clientMovieExtra.get(), params)
     }
 
     WebTestClient.BodyContentSpec createDeleteRequest(String url) {

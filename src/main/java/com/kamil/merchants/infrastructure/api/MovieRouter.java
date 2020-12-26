@@ -25,18 +25,13 @@ public class MovieRouter {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> asd(ServiceResponseHandler handler) {
+    public RouterFunction<ServerResponse> routeMovieExtra(ServiceResponseHandler handler) {
         return RouterFunctions
                 .route(RequestPredicates.GET("/movie/sitename/{siteName}")
-                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getAllMoviesOnSiteName);
+                    .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::getAllMoviesOnSiteName)
+                .andRoute(RequestPredicates.GET("/movie/best/best")
+                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::getBest);
     }
-
-//    @Bean
-//    public  RouterFunction<ServerResponse> feign(FeignService feignService) {
-//        return RouterFunctions
-//                .route(RequestPredicates.GET("/feign/")
-//                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), feignService::feignMethod);
-//    }
 
 
     @Bean

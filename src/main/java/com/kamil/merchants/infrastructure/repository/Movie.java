@@ -60,10 +60,6 @@ public class Movie {
         this.upflixes = upflixes;
     }
 
-    public Movie() {
-    }
-
-
     @Override
     public String toString() {
         return "Movie{" +
