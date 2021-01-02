@@ -33,6 +33,14 @@ dependencies {
 //    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.2.0.RELEASE'
     runtime group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: 'Finchley.SR4', ext: 'pom'
 
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.3.7.RELEASE'
+
+
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.3.7.RELEASE'
+//    compile group: 'org.springframework.security', name: 'spring-security-core', version: '5.3.6.RELEASE'
+//    compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.3.6.RELEASE'
+//    compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.3.6.RELEASE'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 

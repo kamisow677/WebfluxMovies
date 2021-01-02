@@ -122,4 +122,8 @@ public class ServiceResponseHandler {
     }
 
 
+    public Mono<ServerResponse> admin(ServerRequest serverRequest) {
+        Mono<String> admin = Mono.just("Admin");
+        return ServerResponse.ok().body(admin, String.class);
+    }
 }

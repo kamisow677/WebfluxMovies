@@ -172,15 +172,11 @@ class UplixServiceSpec extends BaseIntegration {
             def eventFlux = createGetMovieExtraRequest("/movie/best/best")
         then:
             def parse = jsonslurper.parse(eventFlux.returnResult().responseBody)
-            parse.size == 2
-            parse.find
-
-
-//            assert parse.upflixes.get(0).distributionChoice == DIST_CHOICE
-//            assert parse.upflixes.size() == 2
-//            def first = movieRepository.getAllMovies().blockFirst()
-//            assert first.title == FILMNAME_VALUE
-//            assert first.year == FILMYEAR_VALUE
+//            parse.stream()
+//                .filter(upflix -> "James".equals(upflix.ge()))
+//                .findAny()
+//                .orElse(null);
+        
     }
 
 }
