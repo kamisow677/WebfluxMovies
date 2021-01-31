@@ -67,15 +67,14 @@ class UplixServiceSpec extends BaseIntegration {
     def "get upflixes by id"() {
         given:
             cleanupper()
-            def upflixTestBilder = new UpflixTestBilder()
-            upflixTestBilder.setDistributionChoice("TestowyChoice")
+            def upflixTestBilder = UpflixTestBilder.builder().withDistributionChoice("TestowyChoice").build()
+            dummy = MovieTestBilder.builder()
+                    .withId(ID)
+                    .withUpflixes([upflixTestBilder.toUpflix()])
+                    .build()
+                    .toMovie()
 
-            def movieTestBilder = new MovieTestBilder()
-            movieTestBilder.setId(ID)
-            movieTestBilder.setUpflixes([upflixTestBilder.toUpflix()])
-            dummy = movieTestBilder.toMovie()
-
-            movieRepository.save(movieTestBilder.toMovie()).block()
+            movieRepository.save(dummy).block()
         when:
             def eventFlux = createMovieGetRequest("/movie/3")
         then:
@@ -100,21 +99,12 @@ class UplixServiceSpec extends BaseIntegration {
     def "save upflix #dummyExistsInDB"() {
         given:
             cleanupper()
-            if (dummyExistsInDB == true)
-                movieRepository.save(expected).block()
         when:
-            def eventFlux = movieRepository.save(dummy).block()
+            movieRepository.save(dummy).block()
         then:
-            StepVerifier.create(eventFlux)
-                    .expectNext(expected)
-                    .verifyComplete()
             StepVerifier.create(movieRepository.findById(dummy.getId()))
                     .expectNextCount(1)
                     .verifyComplete()
-        where:
-            dummyExistsInDB || expected
-            true            || dummy
-            false           || dummy
     }
 
     def "should save in database movie with all upflixes"() {
@@ -150,33 +140,32 @@ class UplixServiceSpec extends BaseIntegration {
     def "should get all upflixes by movies count"() {
         given:
             cleanupper()
-            def upflixTestBilder = new UpflixTestBilder()
-            upflixTestBilder.setSiteName("siteName1")
-            def u1 = upflixTestBilder.toUpflix()
-            upflixTestBilder.setSiteName("siteName2")
-            def u2  = upflixTestBilder.toUpflix()
-            upflixTestBilder.setSiteName("siteName3")
-            def u3  = upflixTestBilder.toUpflix()
+            def u1 = UpflixTestBilder.builder().withSiteName("siteName1").build().toUpflix()
+            def u2 = UpflixTestBilder.builder().withSiteName("siteName2").build().toUpflix()
+            def u3 = UpflixTestBilder.builder().withSiteName("siteName3").build().toUpflix()
 
-            def movieTestBilder = new MovieTestBilder()
-            movieTestBilder.setUpflixes([u1,u2])
-            movieTestBilder.setId("1")
-            def m1 = movieTestBilder.toMovie()
-            movieTestBilder.setUpflixes([u1,u3])
-            movieTestBilder.setId("2")
-            def m2 = movieTestBilder.toMovie()
-
-            movieRepository.save(m1).block()
-            movieRepository.save(m2).block()
+            movieRepository.save(
+                    MovieTestBilder.builder()
+                        .withId("1")
+                        .withUpflixes([u1,u2])
+                        .build().toMovie()
+            ).block()
+            movieRepository.save(
+                    MovieTestBilder.builder()
+                        .withId("2")
+                        .withUpflixes([u1,u3])
+                        .build().toMovie()
+            ).block()
         when:
             def eventFlux = createGetMovieExtraRequest("/movie/best/best")
         then:
             def parse = jsonslurper.parse(eventFlux.returnResult().responseBody)
-//            parse.stream()
-//                .filter(upflix -> "James".equals(upflix.ge()))
-//                .findAny()
-//                .orElse(null);
-        
+            parse.max {it -> it.count}.with {
+                assert count == 2
+                assert siteName == "siteName1"
+                assert link == "link"
+                assert distributionChoice == "distributionChoice"
+            }
     }
 
 }

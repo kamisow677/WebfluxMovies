@@ -49,7 +49,6 @@ public class MovieRepository {
 
     public Flux<Movie> getAllMoviesOnSiteName(String siteName) {
         MatchOperation filterStates = match(Criteria.where("upflixes.siteName").is(siteName));
-
         Aggregation agg = Aggregation.newAggregation(
                 filterStates,
                 project()

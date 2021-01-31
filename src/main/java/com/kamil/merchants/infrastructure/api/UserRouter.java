@@ -20,7 +20,9 @@ public class UserRouter {
 
         return RouterFunctions
                 .route(RequestPredicates.POST("/user/register")
-                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::register);
+                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::register)
+                .andRoute(RequestPredicates.GET("/user/login")
+                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::basicLogin);
     }
 
 }

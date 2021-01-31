@@ -24,7 +24,8 @@ public class WebSecurity{
                 .and()
                 .authorizeExchange()
                 .pathMatchers("/admin/**").hasRole("ADMIN")
-                .pathMatchers("/user/**").permitAll()
+                .pathMatchers("/user/login/**").hasAnyRole("USER", "ADMIN")
+                .pathMatchers("/user/register/**").permitAll()
                 .pathMatchers("/**").hasRole("USER")
                 .and()
                 .httpBasic();

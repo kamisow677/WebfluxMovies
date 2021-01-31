@@ -23,6 +23,5 @@ public class Upflix {
         siteName = upflix.siteName;
         link = upflix.link;
         distributionChoice = upflix.distributionChoice;
-
     }
 }

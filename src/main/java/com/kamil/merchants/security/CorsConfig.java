@@ -24,7 +24,5 @@ public class CorsConfig implements WebFluxConfigurer {
 //                .maxAge(8600);
 //    }
 
-
-
 }
 
