@@ -22,8 +22,14 @@ public class MovieRouter {
                         .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::deleteMovieById)
                 .andRoute(RequestPredicates.GET("/movie/{id}")
                         .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::getMovieById)
+                .andRoute(RequestPredicates.PUT("/movie/upflix")
+                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::updateUpflixlink)
                 .andRoute(RequestPredicates.POST("/movie")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::saveMovie);
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), handler::saveMovie)
+                .andRoute(RequestPredicates.POST("/movie/image")
+                        .and(RequestPredicates.accept(MediaType.MULTIPART_FORM_DATA)), handler::uploadImage)
+                .andRoute(RequestPredicates.GET("/movie/image/pla")
+                        .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), handler::getImage);
     }
 
     @Bean

@@ -22,8 +22,13 @@ public class MyUserDetailsService implements ReactiveUserDetailsService {
     public Mono<ServerResponse> register(ServerRequest request) {
         Mono<MyUser> myUserMono = request.bodyToMono(MyUser.class)
                 .flatMap(user -> userRepository.findByUsername(user.getUsername())
-                        .switchIfEmpty(userRepository.save(user)));
+                        .switchIfEmpty(regster(user)));
         return ServerResponse.ok().body(myUserMono, MyUser.class);
+    }
+
+    private Mono<MyUser> regster(MyUser user) {
+        user.setPassword("{noop}"+user.getPassword());
+        return userRepository.save(user);
     }
 
     public  Mono<ServerResponse>  basicLogin(ServerRequest request) {

@@ -2,6 +2,7 @@ package com.kamil.merchants.infrastructure.repository;
 
 import lombok.Builder;
 import lombok.ToString;
+import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,7 +20,17 @@ public class Movie {
 
     private String year;
 
+    private byte[] image;
+
     private List<Upflix> upflixes;
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image2) {
+        this.image = image2;
+    }
 
     public String getId() {
         return id;
@@ -53,10 +64,11 @@ public class Movie {
         this.upflixes = upflixes;
     }
 
-    public Movie(String id, String title, String year, List<Upflix> upflixes) {
+    public Movie(String id, String title, String year, byte[] image, List<Upflix> upflixes) {
         this.id = id;
         this.title = title;
         this.year = year;
+        this.image = image;
         this.upflixes = upflixes;
     }
 

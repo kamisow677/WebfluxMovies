@@ -17,32 +17,17 @@ public class UpflixParserImpl implements UpflixParser {
     @Autowired
     DocumentDownloader documentDownloader;
 
-    public double getExtendedDataMovie(String filmName, String year){
-        Document doc = documentDownloader.getUpflixDocument(filmName, year);
-        String cssQuery = ".score";
-        Elements select = doc.select(cssQuery);
-        return parseHtmlExtendedMovie(select);
-    }
-
-    private double parseHtmlExtendedMovie(Elements select) {
-        return 7.6;
-    }
-
-    @Override
-    public List<Upflix> getDataForExtendedMovie(String filmName, String year) {
-        return null;
-    }
-
     public List<Upflix> getAllUpflixesFromWeb(String filmName, String year){
-        Document doc = documentDownloader.getUpflixDocument(filmName, year);
-        String cssQuery = ".nav.nav-tabs.sources";
-        Elements select = doc.select(cssQuery);
+//        Document doc = documentDownloader.getUpflixDocument(filmName, year);
+        Document doc = documentDownloader.getUpflixDocument("filename.html");
+        String cssQuery = "sc";
+        Element select = doc.getElementById(cssQuery);
         return parseHtmlUpflix(select);
     }
 
-    private List<Upflix> parseHtmlUpflix(Elements elements) {
+    private List<Upflix> parseHtmlUpflix(Element elements) {
         List<Upflix> upflixes = new ArrayList<>();
-        Elements children = elements.get(0).children();
+        Elements children = elements.children();
         for (Element el: children) {
             Upflix upflixFromProperElement = getUpflixFromProperElement(el);
             upflixes.add(upflixFromProperElement);
@@ -53,8 +38,8 @@ public class UpflixParserImpl implements UpflixParser {
     private Upflix getUpflixFromProperElement(Element el) {
         Iterator<Element> iterator = el.getAllElements().iterator();
         String line = iterator.next().toString();
-        String siteName = extractValue(line, "href=", 2, "data-toggle", 2);
-        String distributionChoice = extractValue(line, "</span>", 0, "<strong>", 0);
+        String siteName = extractValue(line, "href=", 2, "data-price", 2);
+        String distributionChoice = extractValue(line, "tabindex", 6, "</span>", 0);
 
         return Upflix.builder()
                 .siteName(siteName)

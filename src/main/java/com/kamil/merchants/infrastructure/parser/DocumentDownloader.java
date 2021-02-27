@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 @Component
@@ -13,6 +15,18 @@ public class DocumentDownloader {
         String url = constructUpflixUrl(filmName, year);
         return connectToUrl(url);
     }
+
+    public Document getUpflixDocument(String pathname){
+        File in = new File(pathname);
+        Document doc = null;
+        try {
+            doc =  Jsoup.parse(in, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return doc;
+    }
+
 
     private Document connectToUrl(String url) {
         try {

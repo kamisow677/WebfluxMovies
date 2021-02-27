@@ -6,6 +6,8 @@ services:
     ports:
       - 27017:27017
     command: --smallfiles
+    volumes:
+      - /data/db
   api:
     image: my-app
     container_name: api
@@ -15,3 +17,5 @@ services:
       - api-database
     depends_on:
       - api-database
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://api-database:27017/local

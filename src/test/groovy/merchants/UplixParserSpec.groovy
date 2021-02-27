@@ -47,7 +47,7 @@ class UplixParserSpec extends BaseIntegration {
             Path path = Paths.get(DOCUMENT_RESOURCE_PATH)
             String html = Files.readString(path)
             Document doc = Jsoup.parse(html)
-            when(documentDownloader.getUpflixDocument(anyString(), anyString())).thenReturn(doc)
+            when(documentDownloader.getUpflixDocument(anyString())).thenReturn(doc)
         when:
             def parsedUpflixes = upflixParser.getAllUpflixesFromWeb(FILMNAME_VALUE, FILMYEAR_VALUE)
         then:
