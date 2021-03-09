@@ -179,15 +179,8 @@ public class ServiceResponseHandler {
     BufferedImage resizeImage(BufferedImage originalImage, double targetWidth, double targetHeight) throws IOException {
         double height = originalImage.getHeight();
         double width = originalImage.getWidth();
-
-//        if (height > width) {
-//            double i =  height / targetHeight;
-//            targetWidth = width / i;
-//        } else {
             double i =  width / targetWidth;
             targetHeight = height / i;
-//        }
-
         BufferedImage resizedImage = new BufferedImage((int) targetWidth, (int) targetHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = resizedImage.createGraphics();
 
